@@ -4,7 +4,7 @@ import os
 import platform
 import tempfile
 
-class CompressionHelper:
+class compression_helper:
     def __init__(self):
         self.extracted_executable = None
         self.base64_files = {

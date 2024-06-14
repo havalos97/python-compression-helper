@@ -1,3 +1,3 @@
-from .compression_helper import CompressionHelper
+from .compression_helper import compression_helper
 
-__all__ = ['CompressionHelper']
+__all__ = ['compression_helper']

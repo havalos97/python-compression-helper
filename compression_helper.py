@@ -50,28 +50,42 @@ class compression_helper:
     if not self.extracted_executable:
       self._extract_executable()
 
-  def compress(self, strInput) -> str:
+  def compress(self, strInput: str) -> bytes:
     self._ensure_executable_extracted()
+    if not strInput or type(strInput) is not str:
+      return b""
 
     try:
-      result = subprocess.run([self.extracted_executable, "compress", strInput], check=True, capture_output=True)
-      return result.stdout.decode().strip()
+      result = subprocess.run(
+        [self.extracted_executable, "compress", strInput],
+        check=True,
+        capture_output=True,
+      )
+      stripped_output = result.stdout.decode().strip()
+      bytes_obj = b"".join([int(x).to_bytes(1) for x in stripped_output.split(",")])
+      return bytes_obj
     except subprocess.CalledProcessError as e:
       print(f"Compression failed: {e.stderr.decode()}")
 
-  def decompress(self, strInput) -> str:
+  def decompress(self, bytesInput: bytes) -> str:
     self._ensure_executable_extracted()
+    strInput = ",".join([str(byte) for byte in bytesInput])
 
     try:
-      result = subprocess.run([self.extracted_executable, "decompress", strInput], check=True, capture_output=True)
+      result = subprocess.run(
+        [self.extracted_executable, "decompress", strInput],
+        check=True,
+        capture_output=True,
+      )
       return result.stdout.decode().strip()
     except subprocess.CalledProcessError as e:
       print(f"Decompression failed: {e.stderr.decode()}")
 
+
 # Example usage
 if __name__ == "__main__":
   helper = compression_helper()
-  compressed_data = helper.compress("HELLO WORLD")
+  compressed_data = helper.compress("N/A")
   print(f"Compressed data: {compressed_data}")
   decompressed_data = helper.decompress(compressed_data)
   print(f"Decompressed data: {decompressed_data}")
